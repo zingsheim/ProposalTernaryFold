@@ -175,7 +175,7 @@ In the following different naming conventions are proposed. The author does not 
 #### 1. Ternary Fold
 
 * `( C ? E : ... )` unary right ternary fold
-* `( C ? E : ... I )` binary right ternary fold
+* `( C ? E : ... : I )` binary right ternary fold
 
 This naming is confusing due to *binary right ternary*.
 Is the expression *binary* or *ternary*?
@@ -183,14 +183,14 @@ Is the expression *binary* or *ternary*?
 #### 2. Conditional Fold
 
 * `( C ? E : ... )` unary right conditional fold
-* `( C ? E : ... I )` binary right conditional fold
+* `( C ? E : ... : I )` binary right conditional fold
 
 This naming is confusing since it suggests that the folding might be conditional.
 
 #### 3. Naming according to the used number of parameter
 
 * `( C ? E : ... )` binary right fold
-* `( C ? E : ... I )` ternary right fold
+* `( C ? E : ... : I )` ternary right fold
 
 This naming is not unique, since binary right fold is used for binary operators as well as ternary operators, but in a different context.
 
@@ -204,7 +204,7 @@ This would need a rename of the existing fold expansions, i.e.
 * `( E op ... op I )` binary right fold with initial value
 * `( I op ... op E )` binary left fold with initial value
 * `( C ? E : ... )` ternary right fold without initial value
-* `( C ? E : ... I )` ternary right fold with initial value
+* `( C ? E : ... : I )` ternary right fold with initial value
 
 This naming is confusing because it renames the existing unary fold expressions to binary fold expressions.
 
