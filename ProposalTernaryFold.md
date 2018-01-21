@@ -1,7 +1,7 @@
 |                |                                                   |
 |----------------|---------------------------------------------------|
 |Document Number:| D0xxxR0                                           |
-|Date:           | 2018-01-20                                        |
+|Date:           | 2018-01-21                                        |
 |Project:        | Programming Language C++                          |
 |Reply-to:       | Frank Zingsheim `<f dot zingsheim at gmx dot de>` |
 |Audience:       | Evolution                                         |
@@ -36,10 +36,10 @@ T throw_range_error()
     throw std::range_error("Out of range");
 }
 
-template <std::size_t... js>
-T test_impl(std::size_t j, std::index_sequence<js...>)
+template <std::size_t... is>
+T test_impl(std::size_t j, std::index_sequence<is...>)
 {
-    return ( (j == js) ? f<js>() : ... : throw_range_error<T>() );
+    return ( (j == is) ? f<is>() : ... : throw_range_error<T>() );
 }
 
 template <std::size_t n>
@@ -52,10 +52,10 @@ T test(std::size_t j)
 
 If the implementer of the method is sure that the index `j` is below `n` the function `test_impl` can also be written like follows without a trailing `throw_range_error` call.
 ```
-template <std::size_t... js>
-T test_impl(std::size_t j, std::index_sequence<js...>)
+template <std::size_t... is>
+T test_impl(std::size_t j, std::index_sequence<is...>)
 {
-    return ( (j == js) ? f<js>() : ... );
+    return ( (j == is) ? f<is>() : ... );
 }
 
 ```
