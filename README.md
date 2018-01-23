@@ -8,3 +8,5 @@ The disussion is availble under the topic
 [Proposal Ternary Right Fold Expression](https://groups.google.com/a/isocpp.org/forum/#!topic/std-proposals/MhP3pHEBIkc).
 
 Pull requests and issue reports here on GitHub are welcome, too.
+
+The latest version in progress of the propasal can be found on the [progress branch](https://github.com/zingsheim/ProposalTernaryFold/blob/progress/ProposalTernaryFold.md).
