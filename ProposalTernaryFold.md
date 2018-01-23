@@ -108,21 +108,21 @@ Suppose, one has a collection of translation classes defined as follows.
 
 struct german
 {
-    static constexpr auto language = "German";
+    static constexpr char language[] = "German";
     static std::string translate_to_english(
         std::string_view text);
 };
 
 struct french
 {
-    static constexpr auto language = "French";
+    static constexpr char language[] = "French";
     static std::string translate_to_english(
         std::string_view text);
 };
 
 struct spanish
 {
-    static constexpr auto language = "Spanish";
+    static constexpr char language[] = "Spanish";
     static std::string translate_to_english(
         std::string_view text);
 };
@@ -133,6 +133,8 @@ The task is now to write a function which calls the correct translation with a l
 
 This task could be solved with ternary fold expression from this proposal like follows.
 ```
+#include <stdexcept>
+
 template <typename T>
 T throw_unknown_language(std::string language)
 {
@@ -147,7 +149,8 @@ std::string translate_to_english_impl(
 {
     return ( language == translators::language
              ? translators::translate_to_english(text)
-             : ... : throw_unknown_language<std::string>(language) );
+             : ... : throw_unknown_language<std::string>(
+                         std::string(language)) );
 }
 
 std::string translate_to_english(
