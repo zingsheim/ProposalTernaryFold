@@ -1,6 +1,6 @@
 # Proposal of a Ternary Fold Expression for Future C++ Standard 
 
-[Proposal Ternary Right Fold Expression](https://github.com/zingsheim/ProposalTernaryFold/blob/master/ProposalTernaryFold.md)
+[Proposal Ternary Right Fold Expression (P1012R0)](https://github.com/zingsheim/ProposalTernaryFold/blob/master/ProposalTernaryFold.md)
 
 The proposal can be discussed on the 
 [c++ std-proposals forum](https://groups.google.com/a/isocpp.org/forum/?fromgroups#!forum/std-proposals).

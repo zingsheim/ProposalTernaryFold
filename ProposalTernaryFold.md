@@ -1,7 +1,7 @@
 |                |                                                   |
 |----------------|---------------------------------------------------|
-|Document Number:| D0xxxR0                                           |
-|Date:           | 2018-01-21                                        |
+|Document Number:| P1012R0                                           |
+|Date:           | 2018-04-02                                        |
 |Project:        | Programming Language C++                          |
 |Reply-to:       | Frank Zingsheim `<f dot zingsheim at gmx dot de>` |
 |Audience:       | Evolution                                         |
@@ -225,7 +225,7 @@ In the fold expression `( C ? E : ... )` the parameter pack `C` and `E` have to 
 
 ## VI Revision History
 
- * Revision 1: Initial Proposal
+ * Revision 0: Initial Proposal
 
 ## VII References
 * [1] Programming Languages - C ++, ISO/IEC
