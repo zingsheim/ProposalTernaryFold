@@ -1,14 +1,14 @@
 |                |                                                   |
 |----------------|---------------------------------------------------|
-|Document Number:| P1012R0                                           |
-|Date:           | 2018-04-02                                        |
+|Document Number:| P1012R?                                           |
+|Date:           | 2018-10-13                                        |
 |Project:        | Programming Language C++                          |
 |Reply-to:       | Frank Zingsheim `<f dot zingsheim at gmx dot de>` |
 |Audience:       | Evolution                                         |
 
 # Proposal Ternary Right Fold Expression
 
-### *Revision 0*
+### *Revision ?*
 
 ## I. Motivation
 ### A) Use case
@@ -30,16 +30,10 @@ With the proposal from this document it would be possible to write this as follo
 #include <functional>
 #include <stdexcept>
 
-template <typename T>
-T throw_range_error()
-{
-    throw std::range_error("Out of range");
-}
-
 template <std::size_t... is>
 T test_impl(std::size_t j, std::index_sequence<is...>)
 {
-    return ( (j == is) ? f<is>() : ... : throw_range_error<T>() );
+    return ( (j == is) ? f<is>() : ... : throw std::range_error("Out of range") );
 }
 
 template <std::size_t n>
@@ -50,7 +44,7 @@ T test(std::size_t j)
 
 ```
 
-If the implementer of the method is sure that the index `j` is below `n` the function `test_impl` can also be written like follows without a trailing `throw_range_error` call.
+If the implementer of the method is sure that the index `j` is below `n` the function `test_impl` can also be written like follows without a trailing `throw`.
 ```
 template <std::size_t... is>
 T test_impl(std::size_t j, std::index_sequence<is...>)
@@ -135,13 +129,6 @@ This task could be solved with ternary fold expression from this proposal like f
 ```
 #include <stdexcept>
 
-template <typename T>
-T throw_unknown_language(std::string language)
-{
-    throw std::runtime_error("Unknown language: " + language);
-}
-
-
 template<class... translators>
 std::string translate_to_english_impl(
     std::string_view language,
@@ -149,8 +136,8 @@ std::string translate_to_english_impl(
 {
     return ( language == translators::language
              ? translators::translate_to_english(text)
-             : ... : throw_unknown_language<std::string>(
-                         std::string(language)) );
+             : ... : throw std::runtime_error(
+                         "Unknown language: " + language) );
 }
 
 std::string translate_to_english(
@@ -226,6 +213,7 @@ In the fold expression `( C ? E : ... )` the parameter pack `C` and `E` have to 
 ## VI Revision History
 
  * Revision 0: Initial Proposal
+ * Revision ?: Enhancing examples with throw in last argument of ternary expression 
 
 ## VII References
 * [1] Programming Languages - C ++, ISO/IEC
