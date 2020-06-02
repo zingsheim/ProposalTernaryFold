@@ -1,16 +1,16 @@
-|                |                                                   |
-|----------------|---------------------------------------------------|
-|Document Number:| P1012R?                                           |
-|Date:           | 2018-10-13                                        |
-|Project:        | Programming Language C++                          |
-|Reply-to:       | Frank Zingsheim `<f dot zingsheim at gmx dot de>` |
-|Audience:       | Evolution                                         |
+|                  |                                                   |
+| ---------------- | ------------------------------------------------- |
+| Document Number: | P1012R?                                           |
+| Date:            | 2020-06-02                                        |
+| Project:         | Programming Language C++                          |
+| Reply-to:        | Frank Zingsheim `<f dot zingsheim at gmx dot de>` |
+| Audience:        | Evolution                                         |
 
 # Proposal Ternary Right Fold Expression
 
 ### *Revision ?*
 
-## I. Motivation
+## I Motivation
 ### A) Use case
 The following example shows a simple use case of a ternary right fold expression.
 
@@ -44,12 +44,12 @@ T test(std::size_t j)
 
 ```
 
-If the implementer of the method is sure that the index `j` is below `n` the function `test_impl` can also be written like follows without a trailing `throw`.
+If the implementer of the method is sure that the index `j` is below `n` the function `test_impl` can also be written like follows without a trailing `throw` but with `std::unreachable()` instead (see proposal P0627R3 [3]).
 ```
 template <std::size_t... is>
 T test_impl(std::size_t j, std::index_sequence<is...>)
 {
-    return ( (j == is) ? f<is>() : ... );
+    return ( (j == is) ? f<is>() : ... : std::unreachable());
 }
 
 ```
@@ -60,14 +60,13 @@ The right fold expansion is applicable to any binary operator which return value
 
 Since for the conditional ternary operator the return value of the operator can be used as a right argument of the conditional ternary operator, the conditional ternary operator can be expanded in a right fold expression, consistently.
 
-## II. Proposed Expansion of Ternary Fold Expression
+## II Proposed Expansion of Ternary Fold Expression
 Only right fold expressions are supported for the conditional ternary operator. Left fold expressions are **not** supported for the conditional ternary operator.
 
-Let `C` denote a non-expanded parameter pack which expand to conditions.
+Let `C` denote a non-expanded parameter pack which expand to conditions with `sizeof...(C) == N`.
 Let `E` denote a non-expanded parameter pack of the same size as `C`.
 Let `I` denote an ordinary expression.
 
-### A) Ternary Right Fold Expression with Initial Value
 The following fold expression
 ```
 ( C ? E : ... : I )
@@ -78,23 +77,57 @@ expands to
 ```
 The limiting case `N = 0` evaluates to `( I )`.
 
-### B) Ternary Right Fold Expression without Initial Value
+## III Extension of Conditional Operator
+In order to combine the conditional operator [2] easily with the `std::unreachable()` from proposal P0627R3 [3] the handing of void types on conditional operators has to be relaxed.
 
-The following fold expression
-```
-( C ? E : ... )
-```
-expands to
-```
-( C(1) ? E(1) : ( ... ( C(N-2) ? E(N-2) : ( C(N-1) ? E(N-1) : E(N) ) ) )
-```
-Note: The n-th conditional `C(N)` is **not** evaluated.
+In C++ 17 the following rule holds: for a conditinal operator [2]:
 
-`N` has to be greater or equal to `1`.
+> If either the second or the third operand has type void, one of the following shall hold:
+> — The second or the third operand (but not both) is a (possibly parenthesized) throw-expression (8.17); the result is of the type and value category of the other. The conditional-expression is a bit-field if that  operand is a bit-field.
+> — Both the second and the third operands have type void; the result is of type void and is a prvalue.
+> [ Note: This includes the case where both operands are throw-expressions. — end note ]
 
-The limiting case `N = 1` evaluates to the unconditional evaluated `( E(N) )`
+The relaxed rule would not only allow throw-expressions but also `noreturn` functions. The relaxed rule would read as follows:
 
-## III. Further Example Use Case
+> If either the second or the third operand has type void, one of the following shall hold:
+> — The second or the third operand (but not both) is a (possibly parenthesized) throw-expression (8.17) or noreturn functions (10.6.8); the result is of the type and value category of the other. The conditional-expression is a bit-field if that  operand is a bit-field.
+> — Both the second and the third operands have type void; the result is of type void and is a prvalue.
+> [ Note: This includes the case where both operands are throw-expressions. — end note ]
+
+By this extension the following implementation of a `checked_sqrt` function would be valid:
+
+```
+[[noreturn]] void argument_must_be_non_negative(
+    std::string_view func_name,
+    double x)
+{ 
+    auto what_stream = std::stringstream{};
+    what_stream << 
+        "The argument of " << func_name << " must be non-negative.\n"
+        "The function was called with the value: " << x;
+    throw std::invalid_argument(what_stream.str());
+}
+
+double checked_sqrt(double x)
+{
+    return (x >= 0) ? sqrt(x) : argument_must_be_non_negative("sqrt", x);
+}
+```
+The implementation of `checked_sqrt` could be rewritten without the conditional operator easily. Or the `argument_must_be_non_negative` functon could be given the correct return value (which could be hard for a general generic function since the return type has to be provided as template parameter). 
+
+However, the usage of proposed relaxed conditional operator reveals its potential in combination with a fold expression of conditional operators and the `std::unreachable` function from proposal P0627R3 [3]:
+
+```
+template <std::size_t... is>
+T test_impl(std::size_t j, std::index_sequence<is...>)
+{
+    return ( (j == is) ? f<is>() : ... : std::unreachable());
+}
+```
+By this it can be expressed that all expected values of `j` are covered by the `is...` and the compiler does not have to add an extra branch for non covered `j` values. The implementation would work since the signature of `std::unreachable` reads as `[[noreturn]] void std::unreachable()`.
+
+## IV Further Example Use Case
+
 Suppose, one has a collection of translation classes defined as follows.
 ```
 #include <string>
@@ -136,7 +169,7 @@ std::string translate_to_english_impl(
 {
     return ( language == translators::language
              ? translators::translate_to_english(text)
-             : ... : throw std::runtime_error(
+             : ... : throw std::invalid_argument(
                          "Unknown language: " + language) );
 }
 
@@ -150,72 +183,87 @@ std::string translate_to_english(
 }
 ```
 
-## IV Naming Convention
-### A) Existing Names for Fold Expressions on Binary Operators
-In the current C++ Standard the fold expressions on binary operators `op` with a pack expansion parameter `E` and an optional initial expression `I` are defined as follows.
+If one wants to factor out the handling of assembling the exception into a function one can do this as follows due to the relaxed rules for the conditional operator.
+```
+#include <stdexcept>
 
-* `( E op ... )` unary right fold
-* `( ... op E )` unary left fold
-* `( E op ... op I )` binary right fold
-* `( I op ... op E )` binary left fold
+[[noreturn]] void unknown_language(
+    std::string_view language)
+{
+    throw std::invalid_argument("Unknown language: " + language);
+}
 
-### B) Possible Names for Fold expressions on the Ternary Operator
-In the following different naming conventions are proposed. The author does not have a clear preference for one convention.
+template<class... translators>
+std::string translate_to_english_impl(
+    std::string_view language,
+    std::string_view text)
+{
+    return ( language == translators::language
+             ? translators::translate_to_english(text)
+             : ... : unknown_language(language) );
+}
 
-#### 1. Ternary Fold
+std::string translate_to_english(
+    std::string_view language,
+    std::string_view text)
+{
+    return translate_to_english_impl<german, french, spanish>(
+        language,
+        text);
+}
+```
 
-* `( C ? E : ... )` unary right ternary fold
-* `( C ? E : ... : I )` binary right ternary fold
+If one wants to tell the compler that the list of languages is complete (maybe because the argument has already been checked before) this could be done as follows:
+```
+#include <utility>
 
-This naming is confusing due to *binary right ternary*.
-Is the expression *binary* or *ternary*?
+template<class... translators>
+std::string translate_to_english_impl(
+    std::string_view language,
+    std::string_view text)
+{
+    return ( language == translators::language
+             ? translators::translate_to_english(text)
+             : ... : std::unreachable() );
+}
 
-#### 2. Conditional Fold
-
-* `( C ? E : ... )` unary right conditional fold
-* `( C ? E : ... : I )` binary right conditional fold
-
-This naming is confusing since it suggests that the folding might be conditional.
-
-#### 3. Naming according to the used number of parameter
-
-* `( C ? E : ... )` binary right fold
-* `( C ? E : ... : I )` ternary right fold
-
-This naming is not unique, since binary right fold is used for binary operators as well as ternary operators, but in a different context.
-
-
-#### 4. Fold with and without Initializer
-
-This would need a rename of the existing fold expansions, i.e.
-
-* `( E op ... )` binary right fold without initial value
-* `( ... op E )` binary left fold without initial value
-* `( E op ... op I )` binary right fold with initial value
-* `( I op ... op E )` binary left fold with initial value
-* `( C ? E : ... )` ternary right fold without initial value
-* `( C ? E : ... : I )` ternary right fold with initial value
-
-This naming is confusing because it renames the existing unary fold expressions to binary fold expressions.
+std::string translate_to_english(
+    std::string_view language,
+    std::string_view text)
+{
+    return translate_to_english_impl<german, french, spanish>(
+        language,
+        text);
+}
+```
 
 ## V Design Decisions
 
-### A) On the Non-Evaluation of the Last Condition In the Right Fold Expression without Initial Value
+### A) On not Supporting Fold Expressions without Initial Value
 
-In the fold expression `( C ? E : ... )` the parameter pack `C` and `E` have to be of the same size. The n-th condition `C(N)` is not evaluated. This paragraph discusses these design decision.
+A fold expression without initial value would look like `( C ? E : ... )`. However, this notation leads to confusion since it is unclear what to do with the n-th condition `C(N)`  in case `sizeof...(C)` and `sizeof...(E)` is equal to `N`.
 
-1) In many cases `C` and `E` are assembled from the same parameter pack. Therefore, the parameter packs `C` and `E` of the same size should be supported. 
+This case can be expressed with less confusion by `( C ? E : ... : std::unreachable())`.
 
-2) If the n-th condition `C(N)` would be evaluated then something has to be executed in case `C(N)` evaluates to false. The only thing which could be done in this case is throwing an exception. In case the user has checked that one of the conditions is already checked this contradicts the principle 'only pay for what you use'. In case the programmer has not checked the conditions before the programmer still can use the ternary fold expression with initial value, i.e. `( C ? E : ... : I )` and handle the error in the `I` expression.
+The only advantage of  `( C ? E : ... )` compared to `( C ? E : ... : std::unreachable())` would be that in the first case the compiler would not call `C(N)` whereas in the second case the compiler has to call `C(N)` in case it may have side effects even though the result is not used anymore.
 
-3) Additional to the parameter pack `C` and `E` being of the same size one could also support the case of `C` being of size `N-1` whereas `E` is of the size `N`. In this case there would not be a condition `C(N)` which is not evaluated.
+However, this slight difference may not be worth the additional confusion and the fold expression without initial value could be added in any later C++ standard version if needed. 
 
 ## VI Revision History
 
- * Revision 0: Initial Proposal
- * Revision ?: Enhancing examples with throw in last argument of ternary expression 
+* Revision 1: 
+  * Initial proposal
+* Revision 2: 
+  * Remove proposal for ternary fold without initial value
+  * Proposal to relax void handling on conditional operator
+  * Include usage of Unreachable Code proposal P0627R3 [3]
+  * Enhancing examples with throw in last argument of ternary expression
 
 ## VII References
 * [1] Programming Languages - C ++, ISO/IEC
 14882:2017(E), 8.1.6 Fold expressions [expr.prim.fold]
-* [2] GitHub repository of this document <https://github.com/zingsheim/ProposalTernaryFold>
+* [2] Programming Languages - C ++, ISO/IEC
+14882:2017(E), 8.16 Conditional operator [expr.cond]
+* [3] Function to mark unreachable code https://wg21.link/P0627R3
+* [4] GitHub repository of this document <https://github.com/zingsheim/ProposalTernaryFold>
+
