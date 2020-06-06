@@ -83,14 +83,18 @@ In order to combine the conditional operator [2] easily with the `std::unreachab
 In C++ 17 the following rule holds: for a conditinal operator [2]:
 
 > If either the second or the third operand has type void, one of the following shall hold:
+>
 > — The second or the third operand (but not both) is a (possibly parenthesized) throw-expression (8.17); the result is of the type and value category of the other. The conditional-expression is a bit-field if that  operand is a bit-field.
+>
 > — Both the second and the third operands have type void; the result is of type void and is a prvalue.
 > [ Note: This includes the case where both operands are throw-expressions. — end note ]
 
 The relaxed rule would not only allow throw-expressions but also `noreturn` functions. The relaxed rule would read as follows:
 
 > If either the second or the third operand has type void, one of the following shall hold:
+>
 > — The second or the third operand (but not both) is a (possibly parenthesized) throw-expression (8.17) **or noreturn functions (10.6.8)**; the result is of the type and value category of the other. The conditional-expression is a bit-field if that  operand is a bit-field.
+>
 > — Both the second and the third operands have type void; the result is of type void and is a prvalue.
 > [ Note: This includes the case where both operands are throw-expressions. — end note ]
 
