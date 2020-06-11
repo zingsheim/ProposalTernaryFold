@@ -80,7 +80,7 @@ The limiting case `N = 0` evaluates to `( I )`.
 ## III Extension of Conditional Operator
 In order to combine the conditional operator [2] easily with the `std::unreachable()` from proposal P0627R3 [3] the handing of void types on conditional operators has to be relaxed.
 
-In C++ 17 the following rule holds: for a conditinal operator [2]:
+In C++ 17 the following rule holds: for a conditional operator [2]:
 
 > If either the second or the third operand has type void, one of the following shall hold:
 >
@@ -117,7 +117,7 @@ double checked_sqrt(double x)
     return (x >= 0) ? sqrt(x) : argument_must_be_non_negative("sqrt", x);
 }
 ```
-The implementation of `checked_sqrt` could be rewritten without the conditional operator easily. Or the `argument_must_be_non_negative` functon could be given the correct return value (which could be hard for a general generic function since the return type has to be provided as template parameter). 
+The implementation of `checked_sqrt` could be rewritten without the conditional operator easily. Or the `argument_must_be_non_negative` function could be given the correct return value (which could be hard for a general generic function since the return type has to be provided as template parameter). 
 
 However, the usage of proposed relaxed conditional operator reveals its potential in combination with a fold expression of conditional operators and the `std::unreachable` function from proposal P0627R3 [3]:
 
@@ -217,7 +217,7 @@ std::string translate_to_english(
 }
 ```
 
-If one wants to tell the compler that the list of languages is complete (maybe because the argument has already been checked before) this could be done as follows:
+If one wants to tell the compiler that the list of languages is complete (maybe because the argument has already been checked before) this could be done as follows:
 ```
 #include <utility>
 
