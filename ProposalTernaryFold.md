@@ -157,7 +157,7 @@ T test_impl(std::size_t j, std::index_sequence<>)
 template <std::size_t i, std::size_t... is>
 T test_impl(std::size_t j, std::index_sequence<i, is...>)
 {
-    return ( (j == i) ? f<i>() : test_impl(j, std::index_sequence<is...>{});
+    return ( (j == i) ? f<i>() : test_impl(j, std::index_sequence<is...>{}) );
 }
 ```
 
