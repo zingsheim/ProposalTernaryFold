@@ -130,7 +130,7 @@ T test_impl(std::size_t j, std::index_sequence<is...>)
 ```
 By this it can be expressed that all expected values of `j` are covered by the `is...` and the compiler does not have to add an extra branch for non covered `j` values. The implementation would work since the signature of `std::unreachable` reads as `[[noreturn]] void std::unreachable()`.
 
-### IV Comparison to Alternatives already available in C++17
+## IV Comparison to Alternatives already available in C++17
 
 The central function from the example above is the function:
 
