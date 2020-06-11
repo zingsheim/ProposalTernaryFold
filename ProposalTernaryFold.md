@@ -60,60 +60,6 @@ The right fold expansion is applicable to any binary operator which return value
 
 Since for the conditional ternary operator the return value of the operator can be used as a right argument of the conditional ternary operator, the conditional ternary operator can be expanded in a right fold expression, consistently.
 
-### C) Comparison to Alternatives already available in C++17
-
-The central function from the example above is the function:
-
-```
-template <std::size_t... is>
-T test_impl(std::size_t j, std::index_sequence<is...>)
-{
-    return ( (j == is) ? f<is>() : ... : throw std::range_error("Out of range") );
-}
-```
-
-This paragraph discusses how a similar functionality could be reached with functionality already available since C++17.
-
-#### 1) Recursion
-
-Fold expressions can often be emulated by recursion. This is also true for the fold of the conditional operator. A recursive implementation would look like:
-
-```
-T test_impl(std::size_t j, std::index_sequence<>)
-{
-    return throw std::range_error("Out of range");
-}
-
-template <std::size_t i, std::size_t... is>
-T test_impl(std::size_t j, std::index_sequence<i, is...>)
-{
-    return ( (j == i) ? f<i>() : test_impl(j, std::index_sequence<is...>{});
-}
-```
-
-With the recursion the implementation detail is spread over several function, i.e. the recursion start and the recursive functions.
-
-#### 2)  Reuse the fold on operator||
-
-Fold expression can often be emulate by making use of another fold expression. The is also true for the fold of the conditional operator. It can be emulated by the fold on operator|| [5].
-
-```
-template <std::size_t... is>
-T test_impl(std::size_t j, std::index_sequence<is...>)
-{
-    auto res = T{};
-    (void)( (j == is ? (res = f<is>(), true) : false)
-            || ... ||
-            (throw std::range_error("Out of range"), true) );
-    return res;
-}
-```
-
-Besides from the fact that there is a lot of code which distracts from the original intend. This approach has the following drawback compared to the direct usage of the fold on the conditional operator proposed here.
-
-1. T has to be default constructible, T has to be move or copy assignable, T has to be move or copy constructible.
-2. Additional overhead might be created by calling the default constructor and at best a move assignment. (Note: The move or copy constructor is not called due to NRVO.)
-
 ## II Proposed Expansion of Ternary Fold Expression
 Only right fold expressions are supported for the conditional ternary operator. Left fold expressions are **not** supported for the conditional ternary operator.
 
@@ -184,7 +130,61 @@ T test_impl(std::size_t j, std::index_sequence<is...>)
 ```
 By this it can be expressed that all expected values of `j` are covered by the `is...` and the compiler does not have to add an extra branch for non covered `j` values. The implementation would work since the signature of `std::unreachable` reads as `[[noreturn]] void std::unreachable()`.
 
-## IV Further Example Use Case
+### IV Comparison to Alternatives already available in C++17
+
+The central function from the example above is the function:
+
+```
+template <std::size_t... is>
+T test_impl(std::size_t j, std::index_sequence<is...>)
+{
+    return ( (j == is) ? f<is>() : ... : throw std::range_error("Out of range") );
+}
+```
+
+This paragraph discusses how a similar functionality could be reached with functionality already available since C++17.
+
+### A) Recursion
+
+Fold expressions can often be emulated by recursion. This is also true for the fold of the conditional operator. A recursive implementation would look like:
+
+```
+T test_impl(std::size_t j, std::index_sequence<>)
+{
+    return throw std::range_error("Out of range");
+}
+
+template <std::size_t i, std::size_t... is>
+T test_impl(std::size_t j, std::index_sequence<i, is...>)
+{
+    return ( (j == i) ? f<i>() : test_impl(j, std::index_sequence<is...>{});
+}
+```
+
+With the recursion the implementation detail is spread over several function, i.e. the recursion start and the recursive functions.
+
+### B)  Reuse the fold on operator||
+
+Fold expression can often be emulate by making use of another fold expression. The is also true for the fold of the conditional operator. It can be emulated by the fold on operator|| [5].
+
+```
+template <std::size_t... is>
+T test_impl(std::size_t j, std::index_sequence<is...>)
+{
+    auto res = T{};
+    (void)( (j == is ? (res = f<is>(), true) : false)
+            || ... ||
+            (throw std::range_error("Out of range"), true) );
+    return res;
+}
+```
+
+Besides from the fact that there is a lot of code which distracts from the original intend. This approach has the following drawback compared to the direct usage of the fold on the conditional operator proposed here.
+
+1. T has to be default constructible, T has to be move or copy assignable, T has to be move or copy constructible.
+2. Additional overhead might be created by calling the default constructor and at best a move assignment. (Note: The move or copy constructor is not called due to NRVO.)
+
+## V Further Example Use Case
 
 Suppose, one has a collection of translation classes defined as follows.
 ```
@@ -295,7 +295,7 @@ std::string translate_to_english(
 }
 ```
 
-## V Design Decisions
+## VI Design Decisions
 
 ### A) On not Supporting Fold Expressions without Initial Value
 
@@ -307,7 +307,7 @@ The only advantage of  `( C ? E : ... )` compared to `( C ? E : ... : std::unrea
 
 However, this slight difference may not be worth the additional confusion and the fold expression without initial value could be added in any later C++ standard version if needed. 
 
-## VI Revision History
+## VII Revision History
 
 * Revision 1: 
   * Initial proposal
@@ -318,7 +318,7 @@ However, this slight difference may not be worth the additional confusion and th
   * Enhancing examples with throw in last argument of ternary expression
   * Added comparison to alternative implementations already available in C++17
 
-## VII References
+## VIII References
 * [1] Programming Languages - C ++, ISO/IEC
 14882:2017(E), 8.1.6 Fold expressions [expr.prim.fold]
 * [2] Programming Languages - C ++, ISO/IEC
