@@ -230,7 +230,9 @@ std::string translate_to_english_impl(
     return ( language == translators::language
              ? translators::translate_to_english(text)
              : ... : throw std::invalid_argument(
-                         "Unknown language: " + language) );
+                         std::string("Unknown language: ").append(
+                             language.begin(),
+                             langauge.end()) );
 }
 
 std::string translate_to_english(
@@ -253,7 +255,10 @@ If one wants to factor out the handling of assembling the exception into a funct
 [[noreturn]] void unknown_language(
     std::string_view language)
 {
-    throw std::invalid_argument("Unknown language: " + language);
+    throw std::invalid_argument(
+        std::string("Unknown language: ").append(
+            language.begin(),
+            language.end()));
 }
 
 template<class... translators>
@@ -276,7 +281,34 @@ std::string translate_to_english(
 }
 ```
 
-### C) Solution with Fold and Unreachable
+### C) Solution with Fold and Explicit Default 
+
+If the first language is the default language this could be realized as follows.
+
+```
+#include <stdexcept>
+
+template<class default_translator, class... translators>
+std::string translate_to_english_impl(
+    std::string_view language,
+    std::string_view text)
+{
+    return ( language == translators::language
+             ? translators::translate_to_english(text)
+             : ... : default_translator::translate_to_english(text) );
+}
+
+std::string translate_to_english(
+    std::string_view language,
+    std::string_view text)
+{
+    return translate_to_english_impl<german, french, spanish>(
+        language,
+        text);
+}
+```
+
+### D) Solution with Fold and Unreachable
 
 If one wants to tell the compiler that the list of languages is complete (maybe because the argument has already been checked before) this could be done as follows:
 
