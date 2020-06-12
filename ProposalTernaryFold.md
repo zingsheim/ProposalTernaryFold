@@ -232,7 +232,7 @@ std::string translate_to_english_impl(
              : ... : throw std::invalid_argument(
                          std::string("Unknown language: ").append(
                              language.begin(),
-                             langauge.end())) );
+                             language.end())) );
 }
 
 std::string translate_to_english(
