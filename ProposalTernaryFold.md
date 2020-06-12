@@ -216,6 +216,8 @@ struct spanish
 The supported languages are known at compile time.
 The task is now to write a function which calls the correct translation with a language string given at run time.
 
+### A) Solution with Fold and Throw
+
 This task could be solved with ternary fold expression from this proposal like follows.
 ```
 #include <stdexcept>
@@ -241,7 +243,10 @@ std::string translate_to_english(
 }
 ```
 
+### B) Solution with Fold and Noreturn Function
+
 If one wants to factor out the handling of assembling the exception into a function one can do this as follows due to the relaxed rules for the conditional operator.
+
 ```
 #include <stdexcept>
 
@@ -271,7 +276,10 @@ std::string translate_to_english(
 }
 ```
 
+### C) Solution with Fold and Unreachable
+
 If one wants to tell the compiler that the list of languages is complete (maybe because the argument has already been checked before) this could be done as follows:
+
 ```
 #include <utility>
 
