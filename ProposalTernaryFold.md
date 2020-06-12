@@ -55,7 +55,7 @@ T test_impl(std::size_t j, std::index_sequence<is...>)
 ```
 
 ### B) Consistent Completion of Fold Expressions
-The proposed syntax is a canonical extension of the already existing fold expression for binary operators [[1]](######[1] Programming Languages - C ++, ISO/IEC 14882:2017(E), 8.1.6 Fold expressions [expr.prim.fold]).
+The proposed syntax is a canonical extension of the already existing fold expression for binary operators [[1]](######[1] Programming Languages - C ++, ISO/IEC 14882:2017(E), 8.1.6 Fold expressions [expr.prim.fold] https://timsong-cpp.github.io/cppwp/n4659/expr.prim.fold).
 The right fold expansion is applicable to any binary operator which return value can be used as a right argument of the same binary operator.
 
 Since for the conditional ternary operator the return value of the operator can be used as a right argument of the conditional ternary operator, the conditional ternary operator can be expanded in a right fold expression, consistently.
@@ -78,9 +78,9 @@ expands to
 The limiting case `N = 0` evaluates to `( I )`.
 
 ## III Extension of Conditional Operator
-In order to combine the conditional operator [[2]](######[2] Programming Languages - C ++, ISO/IEC 14882:2017(E), 8.16 Conditional operator [expr.cond]) easily with the `std::unreachable()` from proposal P0627R3 [[3]](######[3] Function to mark unreachable code https://wg21.link/P0627R3) the handing of void types on conditional operators has to be relaxed.
+In order to combine the conditional operator [[2]](######[2] Programming Languages - C ++, ISO/IEC 14882:2017(E), 8.16 Conditional operator [expr.cond] https://timsong-cpp.github.io/cppwp/n4659/expr.cond) easily with the `std::unreachable()` from proposal P0627R3 [[3]](######[3] Function to mark unreachable code https://wg21.link/P0627R3) the handing of void types on conditional operators has to be relaxed.
 
-In C++ 17 the following rule holds: for a conditional operator [[2]](######[2] Programming Languages - C ++, ISO/IEC 14882:2017(E), 8.16 Conditional operator [expr.cond]):
+In C++ 17 the following rule holds: for a conditional operator [[2]](######[2] Programming Languages - C ++, ISO/IEC 14882:2017(E), 8.16 Conditional operator [expr.cond] https://timsong-cpp.github.io/cppwp/n4659/expr.cond):
 
 > If either the second or the third operand has type void, one of the following shall hold:
 >
@@ -359,8 +359,8 @@ However, this slight difference may not be worth the additional confusion and th
   * Added comparison to alternative implementations already available in C++17
 
 ## VIII References
-###### [1] Programming Languages - C ++, ISO/IEC 14882:2017(E), 8.1.6 Fold expressions [expr.prim.fold]
-###### [2] Programming Languages - C ++, ISO/IEC 14882:2017(E), 8.16 Conditional operator [expr.cond]
+###### [1] Programming Languages - C ++, ISO/IEC 14882:2017(E), 8.1.6 Fold expressions [expr.prim.fold] https://timsong-cpp.github.io/cppwp/n4659/expr.prim.fold
+###### [2] Programming Languages - C ++, ISO/IEC 14882:2017(E), 8.16 Conditional operator [expr.cond] https://timsong-cpp.github.io/cppwp/n4659/expr.cond
 ######  [3] Function to mark unreachable code https://wg21.link/P0627R3
 ######  [4] foonathan::blog(): Nifty Fold Expression Tricks: Get the nth element (where n is a runtime value) https://foonathan.net/2020/05/fold-tricks/
 
