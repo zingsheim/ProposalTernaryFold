@@ -363,6 +363,5 @@ However, this slight difference may not be worth the additional confusion and th
 ###### [2] Programming Languages - C ++, ISO/IEC 14882:2017(E), 8.16 Conditional operator [expr.cond] https://timsong-cpp.github.io/cppwp/n4659/expr.cond
 ######  [3] Function to mark unreachable code https://wg21.link/P0627R3
 ######  [4] foonathan::blog(): Nifty Fold Expression Tricks: Get the nth element (where n is a runtime value) https://foonathan.net/2020/05/fold-tricks/
-
-[5] GitHub repository of this document <https://github.com/zingsheim/ProposalTernaryFold>
+###### [5] GitHub repository of this document https://github.com/zingsheim/ProposalTernaryFold
 
