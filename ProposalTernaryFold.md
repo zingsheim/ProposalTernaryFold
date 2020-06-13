@@ -213,8 +213,20 @@ struct spanish
 };
 
 ```
-The supported languages are known at compile time.
-The task is now to write a function which calls the correct translation with a language string given at run time.
+The supported languages are known at compile time such that one wants to call the translation like follows.
+
+```
+std::string translate_to_english(
+    std::string_view language,
+    std::string_view text)
+{
+    return translate_to_english_impl<german, french, spanish>(
+        language,
+        text);
+}
+```
+
+The task is now to write the function `translate_to_english_impl` which calls the correct translation with a language string given at run time.
 
 ### A) Solution with Fold and Throw
 
@@ -234,20 +246,11 @@ std::string translate_to_english_impl(
                              language.begin(),
                              language.end())) );
 }
-
-std::string translate_to_english(
-    std::string_view language,
-    std::string_view text)
-{
-    return translate_to_english_impl<german, french, spanish>(
-        language,
-        text);
-}
 ```
 
 ### B) Solution with Fold and Noreturn Function
 
-If one wants to factor out the handling of assembling the exception into a function one can do this as follows due to the relaxed rules for the conditional operator.
+If one wants to factor out the handling of assembling the exception into a function one can do this as follows due to the relaxed rules for the conditional operator proposed in [III Extension of Conditional Operator](##III Extension of Conditional Operator).
 
 ```
 #include <stdexcept>
@@ -270,15 +273,6 @@ std::string translate_to_english_impl(
              ? translators::translate_to_english(text)
              : ... : unknown_language(language) );
 }
-
-std::string translate_to_english(
-    std::string_view language,
-    std::string_view text)
-{
-    return translate_to_english_impl<german, french, spanish>(
-        language,
-        text);
-}
 ```
 
 ### C) Solution with Fold and Explicit Default 
@@ -286,8 +280,6 @@ std::string translate_to_english(
 If the first language is the default language this could be realized as follows.
 
 ```
-#include <stdexcept>
-
 template<class default_translator, class... translators>
 std::string translate_to_english_impl(
     std::string_view language,
@@ -297,20 +289,11 @@ std::string translate_to_english_impl(
              ? translators::translate_to_english(text)
              : ... : default_translator::translate_to_english(text) );
 }
-
-std::string translate_to_english(
-    std::string_view language,
-    std::string_view text)
-{
-    return translate_to_english_impl<german, french, spanish>(
-        language,
-        text);
-}
 ```
 
 ### D) Solution with Fold and Unreachable
 
-If one wants to tell the compiler that the list of languages is complete (maybe because the argument has already been checked before) this could be done as follows:
+If one wants to tell the compiler that the list of languages is complete (maybe because the argument has already been checked before) this could be done as follows with the `std::unreachable` function proposed in P0627R3 [[3]](######[3] Function to mark unreachable code https://wg21.link/P0627R3) and the relaxed rules for the conditional operator proposed in [III Extension of Conditional Operator](##III Extension of Conditional Operator).
 
 ```
 #include <utility>
@@ -323,15 +306,6 @@ std::string translate_to_english_impl(
     return ( language == translators::language
              ? translators::translate_to_english(text)
              : ... : std::unreachable() );
-}
-
-std::string translate_to_english(
-    std::string_view language,
-    std::string_view text)
-{
-    return translate_to_english_impl<german, french, spanish>(
-        language,
-        text);
 }
 ```
 
