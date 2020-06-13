@@ -11,7 +11,7 @@
 ### *Revision ?*
 
 ## I Motivation
-### A) Use case
+### A: Use case
 The following example shows a simple use case of a ternary right fold expression.
 
 Consider a function `f` with an index based template parameter:
@@ -54,7 +54,7 @@ T test_impl(std::size_t j, std::index_sequence<is...>)
 
 ```
 
-### B) Consistent Completion of Fold Expressions
+### B: Consistent Completion of Fold Expressions
 The proposed syntax is a canonical extension of the already existing fold expression for binary operators [[1]](######[1] Programming Languages - C ++, ISO/IEC 14882:2017(E), 8.1.6 Fold expressions [expr.prim.fold] https://timsong-cpp.github.io/cppwp/n4659/expr.prim.fold).
 The right fold expansion is applicable to any binary operator which return value can be used as a right argument of the same binary operator.
 
@@ -228,7 +228,7 @@ std::string translate_to_english(
 
 The task is now to write the function `translate_to_english_impl` which calls the correct translation with a language string given at run time.
 
-### A) Solution with Fold and Throw
+### A: Solution with Fold and Throw
 
 This task could be solved with ternary fold expression from this proposal like follows.
 ```
@@ -248,7 +248,7 @@ std::string translate_to_english_impl(
 }
 ```
 
-### B) Solution with Fold and Noreturn Function
+### B: Solution with Fold and Noreturn Function
 
 If one wants to factor out the handling of assembling the exception into a function one can do this as follows due to the relaxed rules for the conditional operator proposed in [III Extension of Conditional Operator](##III Extension of Conditional Operator).
 
@@ -275,7 +275,7 @@ std::string translate_to_english_impl(
 }
 ```
 
-### C) Solution with Fold and Explicit Default 
+### C: Solution with Fold and Explicit Default 
 
 If the first language is the default language this could be realized as follows.
 
@@ -291,7 +291,7 @@ std::string translate_to_english_impl(
 }
 ```
 
-### D) Solution with Fold and Unreachable
+### D: Solution with Fold and Unreachable
 
 If one wants to tell the compiler that the list of languages is complete (maybe because the argument has already been checked before) this could be done as follows with the `std::unreachable` function proposed in P0627R3 [[3]](######[3] Function to mark unreachable code https://wg21.link/P0627R3) and the relaxed rules for the conditional operator proposed in [III Extension of Conditional Operator](##III Extension of Conditional Operator).
 
@@ -309,9 +309,63 @@ std::string translate_to_english_impl(
 }
 ```
 
+## V Comparison to Alternatives already available in C++20
+
+The central function from the example above is the function:
+
+```
+template <std::size_t... is>
+T test_impl(std::size_t j, std::index_sequence<is...>)
+{
+    return ( (j == is) ? f<is>() : ... : throw std::range_error("Out of range") );
+}
+```
+
+This paragraph discusses how a fold expresssion in [A: Solution with Fold and Throw](###A: Solution with Fold and Throw) could be reached with functionality already available since C++20.
+
+### A: Recursion
+
+Fold expressions can often be emulated by recursion. This is also true for the fold of the conditional operator. A recursive implementation would look like:
+
+```
+T test_impl(std::size_t j, std::index_sequence<>)
+{
+    return throw std::range_error("Out of range");
+}
+
+template <std::size_t i, std::size_t... is>
+T test_impl(std::size_t j, std::index_sequence<i, is...>)
+{
+    return (j == i) ? f<i>() : test_impl(j, std::index_sequence<is...>{});
+}
+```
+
+With the recursion the implementation detail is spread over several function, i.e. the recursion start and the recursive functions.
+
+### B:  Reuse the fold on operator||
+
+Fold expression can often be emulate by making use of another fold expression. The is also true for the fold of the conditional operator. It can be emulated by the fold on operator|| [[4]](######[4] foonathan::blog(): Nifty Fold Expression Tricks: Get the nth element (where n is a runtime value) https://foonathan.net/2020/05/fold-tricks/).
+
+```
+template <std::size_t... is>
+T test_impl(std::size_t j, std::index_sequence<is...>)
+{
+    auto res = T{};
+    (void)( (j == is ? (res = f<is>(), true) : false)
+            || ... ||
+            (throw std::range_error("Out of range"), true) );
+    return res;
+}
+```
+
+Besides from the fact that there is a lot of code which distracts from the original intend. This approach has the following drawback compared to the direct usage of the fold on the conditional operator proposed here.
+
+1. T has to be default constructible, T has to be move or copy assignable, T has to be move or copy constructible.
+2. Additional overhead might be created by calling the default constructor and at best a move assignment. (Note: The move or copy constructor is not called due to NRVO.)
+
 ## VI Design Decisions
 
-### A) On not Supporting Fold Expressions without Initial Value
+### A: On not Supporting Fold Expressions without Initial Value
 
 A fold expression without initial value would look like `( C ? E : ... )`. However, this notation leads to confusion since it is unclear what to do with the n-th condition `C(N)`  in case `sizeof...(C)` and `sizeof...(E)` is equal to `N`.
 
