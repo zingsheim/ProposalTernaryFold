@@ -257,7 +257,7 @@ std::string translate_to_english_impl(
 
 ## V Comparison to Alternatives already available in C++20
 
-This paragraph discusses how the functionality of the fold expression in [A: Solution with Fold and Throw](###A: Solution with Fold and Throw) could be reached with functionality already available since C++20.
+This paragraph discusses how the functionality of the fold expression in [A: Solution with Fold and Throw](###A: Solution with Fold and Throw) could be reached with functionality already available since C++20. (The examples can be found on Compiler Explorer https://gcc.godbolt.org/z/qzup48, too.)
 
 ### A: Explicit Calls
 
