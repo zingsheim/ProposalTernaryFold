@@ -290,28 +290,32 @@ This implementation would create exactly the same binary as the fold expression.
 
 Fold expressions can often be emulated by recursion. This is also true for the fold of the conditional operator. A recursive implementation would look like:
 
-```
+```C++
 #include <stdexcept>
 
-template<>
+template<class first_translator>
 std::string translate_to_english_impl(
     std::string_view language,
     std::string_view text)
 {
-    return throw std::invalid_argument(
+    return language == first_translator::language
+             ? first_translator::translate_to_english(text)
+             : throw std::invalid_argument(
                          std::string("Unknown language: ").append(
                              language.begin(),
                              language.end()));
 }
 
-template<class first_translator, class... translators>
+template<class first_translator, class second_translator, class... translators>
 std::string translate_to_english_impl(
     std::string_view language,
     std::string_view text)
 {
-    return ( language == first_translator::language
+    return language == first_translator::language
              ? first_translator::translate_to_english(text)
-             : translate_to_english_impl<translators...>(language, text);
+             : translate_to_english_impl<second_translator, translators...>(
+                 language,
+                 text);
 }
 ```
 
