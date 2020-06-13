@@ -271,12 +271,12 @@ std::string translate_to_english_impl(
     std::string_view language,
     std::string_view text)
 {
-    return language == translators1::language
-           ? translators1::translate_to_english(text)
-           : language == translators2::language
-           ? translators2::translate_to_english(text)
-           : language == translators3::language
-           ? translators3::translate_to_english(text)
+    return language == translator1::language
+           ? translator1::translate_to_english(text)
+           : language == translator2::language
+           ? translator2::translate_to_english(text)
+           : language == translator3::language
+           ? translator3::translate_to_english(text)
            : throw std::invalid_argument(
                          std::string("Unknown language: ").append(
                              language.begin(),
