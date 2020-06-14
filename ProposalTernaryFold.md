@@ -26,7 +26,7 @@ T f();
 The task is now to write a function which calls the appropriate template function for a run time index `j` which has a compile time maximal index `(n-1)`. If `j` is out of bounds an exception should be thrown.
 
 With the proposal from this document it would be possible to write this as follows.
-```c++
+```C++
 #include <functional>
 #include <stdexcept>
 
@@ -46,7 +46,7 @@ T test(std::size_t j)
 ```
 
 If the implementer of the method is sure that the index `j` is below `n` the function `test_impl` can also be written like follows without a trailing `throw` but with `std::unreachable()` instead (see proposal P0627R3 [[3]](######[3] Function to mark unreachable code https://wg21.link/P0627R3)).
-```c++
+```C++
 template <std::size_t... is>
 T test_impl(std::size_t j, std::index_sequence<is...>)
 {
@@ -101,7 +101,7 @@ The relaxed rule would not only allow throw-expressions but also `noreturn` func
 
 By this extension the following implementation of a `checked_sqrt` function would be valid:
 
-```c++
+```C++
 [[noreturn]] void argument_must_be_non_negative(
     std::string_view func_name,
     double x)
@@ -122,7 +122,7 @@ The implementation of `checked_sqrt` could be rewritten without the conditional 
 
 However, the usage of proposed relaxed conditional operator reveals its potential in combination with a fold expression of conditional operators and the `std::unreachable` function from proposal P0627R3 [[3]](######[3] Function to mark unreachable code https://wg21.link/P0627R3):
 
-```c++
+```C++
 template <std::size_t... is>
 T test_impl(std::size_t j, std::index_sequence<is...>)
 {
@@ -134,7 +134,7 @@ By this it can be expressed that all expected values of `j` are covered by the `
 ## VI Further Example Use Case
 
 Suppose, one has a collection of translation classes defined as follows.
-```c++
+```C++
 #include <string>
 #include <string_view>
 
@@ -162,7 +162,7 @@ struct spanish
 ```
 The supported languages are known at compile time such that one wants to call the translation like follows.
 
-```c++
+```C++
 std::string translate_to_english(
     std::string_view language,
     std::string_view text)
@@ -178,7 +178,7 @@ The task is now to write the function `translate_to_english_impl` which calls th
 ### A: Solution with Fold and Throw
 
 This task could be solved with ternary fold expression from this proposal like follows.
-```c++
+```C++
 #include <stdexcept>
 
 template<class... translators>
@@ -199,7 +199,7 @@ std::string translate_to_english_impl(
 
 If one wants to factor out the handling of assembling the exception into a function one can do this as follows due to the relaxed rules for the conditional operator proposed in [III Extension of Conditional Operator](##III Extension of Conditional Operator).
 
-```c++
+```C++
 #include <stdexcept>
 
 [[noreturn]] void unknown_language(
@@ -226,7 +226,7 @@ std::string translate_to_english_impl(
 
 If the first language is the default language this could be realized as follows.
 
-```c++
+```C++
 template<class default_translator, class... translators>
 std::string translate_to_english_impl(
     std::string_view language,
@@ -242,7 +242,7 @@ std::string translate_to_english_impl(
 
 If one wants to tell the compiler that the list of languages is complete (maybe because the argument has already been checked before) this could be done as follows with the `std::unreachable` function proposed in P0627R3 [[3]](######[3] Function to mark unreachable code https://wg21.link/P0627R3) and the relaxed rules for the conditional operator proposed in [III Extension of Conditional Operator](##III Extension of Conditional Operator).
 
-```c++
+```C++
 #include <utility>
 
 template<class... translators>
@@ -380,4 +380,3 @@ However, this slight difference may not be worth the additional confusion and th
 ######  [3] Function to mark unreachable code https://wg21.link/P0627R3
 ######  [4] foonathan::blog(): Nifty Fold Expression Tricks: Get the nth element (where n is a runtime value) https://foonathan.net/2020/05/fold-tricks/
 ###### [5] GitHub repository of this document https://github.com/zingsheim/ProposalTernaryFold
-
