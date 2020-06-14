@@ -336,9 +336,11 @@ std::string translate_to_english_impl(
 {
     auto translation = std::string{};
     (void)( (language == translators::language
-             ? (translation = translators::translate_to_english(text), true) : false)
-             || ... ||
-             (throw std::invalid_argument(
+                ? (translation = translators::translate_to_english(text), 
+                   true) 
+                : false)
+            || ... ||
+            (throw std::invalid_argument(
                          std::string("Unknown language: ").append(
                              language.begin(),
                              language.end())), true) );
