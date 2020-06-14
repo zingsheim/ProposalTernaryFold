@@ -45,7 +45,7 @@ T test(std::size_t j)
 
 ```
 
-If the implementer of the method is sure that the index `j` is below `n` the function `test_impl` can also be written like follows without a trailing `throw` but with `std::unreachable()` instead (see proposal P0627R3 [[3]](######[3] Function to mark unreachable code https://wg21.link/P0627R3)).
+If the implementer of the method is sure that the index `j` is below `n` the function `test_impl` can also be written like follows without a trailing `throw` but with `std::unreachable()` instead (see proposal P0627R3 [[4]](######[4] Function to mark unreachable code https://wg21.link/P0627R3)).
 ```C++
 template <std::size_t... is>
 T test_impl(std::size_t j, std::index_sequence<is...>)
@@ -79,7 +79,7 @@ expands to
 The limiting case `N = 0` evaluates to `( I )`.
 
 ## III Extension of Conditional Operator
-In order to combine the conditional operator [[2]](######[2] Programming Languages - C ++, ISO/IEC 14882:2017(E), 8.16 Conditional operator [expr.cond] https://timsong-cpp.github.io/cppwp/n4659/expr.cond) easily with the `std::unreachable()` from proposal P0627R3 [[3]](######[3] Function to mark unreachable code https://wg21.link/P0627R3) the handing of void types on conditional operators has to be relaxed.
+In order to combine the conditional operator [[2]](######[2] Programming Languages - C ++, ISO/IEC 14882:2017(E), 8.16 Conditional operator [expr.cond] https://timsong-cpp.github.io/cppwp/n4659/expr.cond) easily with the `std::unreachable()` from proposal P0627R3 [[4]](######[4] Function to mark unreachable code https://wg21.link/P0627R3) the handing of void types on conditional operators has to be relaxed.
 
 In C++ 17 the following rule holds: for a conditional operator [[2]](######[2] Programming Languages - C ++, ISO/IEC 14882:2017(E), 8.16 Conditional operator [expr.cond] https://timsong-cpp.github.io/cppwp/n4659/expr.cond):
 
@@ -90,7 +90,7 @@ In C++ 17 the following rule holds: for a conditional operator [[2]](######[2] P
 > — Both the second and the third operands have type void; the result is of type void and is a prvalue.
 > [ Note: This includes the case where both operands are throw-expressions. — end note ]
 
-The relaxed rule would not only allow throw-expressions but also `noreturn` functions. The relaxed rule would read as follows:
+The relaxed rule would not only allow throw-expressions but also `noreturn` functions [[3]](######[3] Programming Languages - C ++, ISO/IEC 14882:2017(E), 10.6.8 Noreturn attribute [dcl.attr.noreturn] https://timsong-cpp.github.io/cppwp/n4659/dcl.attr.noreturn). The relaxed rule would read as follows:
 
 > If either the second or the third operand has type void, one of the following shall hold:
 >
@@ -120,7 +120,7 @@ double checked_sqrt(double x)
 ```
 The implementation of `checked_sqrt` could be rewritten without the conditional operator easily. Or the `argument_must_be_non_negative` function could be given the correct return value (which could be hard for a general generic function since the return type has to be provided as template parameter). 
 
-However, the usage of proposed relaxed conditional operator reveals its potential in combination with a fold expression of conditional operators and the `std::unreachable` function from proposal P0627R3 [[3]](######[3] Function to mark unreachable code https://wg21.link/P0627R3):
+However, the usage of proposed relaxed conditional operator reveals its potential in combination with a fold expression of conditional operators and the `std::unreachable` function from proposal P0627R3 [[4]](######[4] Function to mark unreachable code https://wg21.link/P0627R3):
 
 ```C++
 template <std::size_t... is>
@@ -240,7 +240,7 @@ std::string translate_to_english_impl(
 
 ### D: Solution with Fold and Unreachable
 
-If one wants to tell the compiler that the list of languages is complete (maybe because the argument has already been checked before) this could be done as follows with the `std::unreachable` function proposed in P0627R3 [[3]](######[3] Function to mark unreachable code https://wg21.link/P0627R3) and the relaxed rules for the conditional operator proposed in [III Extension of Conditional Operator](##III Extension of Conditional Operator).
+If one wants to tell the compiler that the list of languages is complete (maybe because the argument has already been checked before) this could be done as follows with the `std::unreachable` function proposed in P0627R3 [[4]](######[4] Function to mark unreachable code https://wg21.link/P0627R3) and the relaxed rules for the conditional operator proposed in [III Extension of Conditional Operator](##III Extension of Conditional Operator).
 
 ```C++
 #include <utility>
@@ -324,7 +324,7 @@ With the recursion the implementation detail is spread over several function, i.
 
 ### C:  Reuse the fold on operator||
 
-Fold expression can often be emulate by making use of another fold expression. The is also true for the fold of the conditional operator. It can be emulated by the fold on operator|| [[4]](######[4] foonathan::blog(): Nifty Fold Expression Tricks: Get the nth element (where n is a runtime value) https://foonathan.net/2020/05/fold-tricks/).
+Fold expression can often be emulate by making use of another fold expression. The is also true for the fold of the conditional operator. It can be emulated by the fold on operator|| [[5]](######[5] foonathan::blog(): Nifty Fold Expression Tricks: Get the nth element (where n is a runtime value) https://foonathan.net/2020/05/fold-tricks/).
 
 ```C++
 #include <stdexcept>
@@ -370,13 +370,14 @@ However, this slight difference may not be worth the additional confusion and th
 * Revision 2: 
   * Remove proposal for ternary fold without initial value
   * Proposal to relax void handling on conditional operator
-  * Include usage of Unreachable Code proposal P0627R3 [[3]](######[3] Function to mark unreachable code https://wg21.link/P0627R3)
+  * Include usage of Unreachable Code proposal P0627R3 [[4]](######[4] Function to mark unreachable code https://wg21.link/P0627R3)
   * Enhancing examples with throw in last argument of ternary expression
   * Added comparison to alternative implementations already available in C++20
 
 ## VIII References
 ###### [1] Programming Languages - C ++, ISO/IEC 14882:2017(E), 8.1.6 Fold expressions [expr.prim.fold] https://timsong-cpp.github.io/cppwp/n4659/expr.prim.fold
 ###### [2] Programming Languages - C ++, ISO/IEC 14882:2017(E), 8.16 Conditional operator [expr.cond] https://timsong-cpp.github.io/cppwp/n4659/expr.cond
-######  [3] Function to mark unreachable code https://wg21.link/P0627R3
-######  [4] foonathan::blog(): Nifty Fold Expression Tricks: Get the nth element (where n is a runtime value) https://foonathan.net/2020/05/fold-tricks/
-###### [5] GitHub repository of this document https://github.com/zingsheim/ProposalTernaryFold
+###### [3] Programming Languages - C ++, ISO/IEC 14882:2017(E), 10.6.8 Noreturn attribute [dcl.attr.noreturn] https://timsong-cpp.github.io/cppwp/n4659/dcl.attr.noreturn
+###### [4] Function to mark unreachable code https://wg21.link/P0627R3
+###### [5] foonathan::blog(): Nifty Fold Expression Tricks: Get the nth element (where n is a runtime value) https://foonathan.net/2020/05/fold-tricks/
+###### [6] GitHub repository of this document https://github.com/zingsheim/ProposalTernaryFold
