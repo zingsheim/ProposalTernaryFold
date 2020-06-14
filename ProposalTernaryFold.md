@@ -33,7 +33,8 @@ With the proposal from this document it would be possible to write this as follo
 template <std::size_t... is>
 T test_impl(std::size_t j, std::index_sequence<is...>)
 {
-    return ( (j == is) ? f<is>() : ... : throw std::range_error("Out of range") );
+    return ( (j == is) ? f<is>() 
+            : ... : throw std::range_error("Out of range") );
 }
 
 template <std::size_t n>
