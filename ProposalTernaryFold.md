@@ -285,7 +285,7 @@ std::string translate_to_english_impl(
 }
 ```
 
-This implementation would create exactly the same binary as the fold expression. However, the implementation is less generic since it is limited to exactly three languages and it contains duplication of code.
+This implementation would create exactly the same binary as the fold expression. However, the implementation is less generic since it is limited to a fixed number of languages, in this case three, exactly, and it contains duplication of code.
 
 ### B: Recursion
 
