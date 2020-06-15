@@ -365,7 +365,11 @@ The only advantage of  `( C ? E : ... )` compared to `( C ? E : ... : std::unrea
 
 However, this slight difference may not be worth the additional confusion and the fold expression without default expression could be added in any later C++ standard version if needed. 
 
-## VII. Revision History
+## VII. Acknowledgements
+
+Many thanks to Arthur O'Dwyer for his valuable feedback.
+
+## VIII. Revision History
 
 * Revision 0: 
   * Initial proposal
@@ -377,7 +381,7 @@ However, this slight difference may not be worth the additional confusion and th
   * Enhancing examples with throw in last argument of ternary expression
   * Added comparison to alternative implementations already available in C++20
 
-## VIII. References
+## IX. References
 ###### [1] Programming Languages - C ++, ISO/IEC 14882:2017(E), 8.1.6 Fold expressions [expr.prim.fold] https://timsong-cpp.github.io/cppwp/n4659/expr.prim.fold
 ###### [2] Programming Languages - C ++, ISO/IEC 14882:2017(E), 8.16 Conditional operator [expr.cond] https://timsong-cpp.github.io/cppwp/n4659/expr.cond
 ###### [3] Programming Languages - C ++, ISO/IEC 14882:2017(E), 10.6.8 Noreturn attribute [dcl.attr.noreturn] https://timsong-cpp.github.io/cppwp/n4659/dcl.attr.noreturn
