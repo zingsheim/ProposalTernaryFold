@@ -10,8 +10,8 @@
 
 ### *Revision ?*
 
-## I Motivation
-### A: Use case
+## I. Motivation
+### A) Use case
 The following example shows a simple use case of a ternary right fold expression.
 
 Consider a function `f` with an index based template parameter:
@@ -55,13 +55,13 @@ T test_impl(std::size_t j, std::index_sequence<is...>)
 
 ```
 
-### B: Consistent Completion of Fold Expressions
+### B) Consistent Completion of Fold Expressions
 The proposed syntax is a canonical extension of the already existing fold expression for binary operators [[1]](#1-programming-languages---c--isoiec-148822017e-816-fold-expressions-exprprimfold-httpstimsong-cppgithubiocppwpn4659exprprimfold).
 The right fold expansion is applicable to any binary operator which return value can be used as a right argument of the same binary operator.
 
 Since for the conditional ternary operator the return value of the operator can be used as a right argument of the conditional ternary operator, the conditional ternary operator can be expanded in a right fold expression, consistently.
 
-## II Proposed Expansion of Ternary Fold Expression
+## II. Proposed Expansion of Ternary Fold Expression
 Only right fold expressions are supported for the conditional ternary operator. Left fold expressions are **not** supported for the conditional ternary operator.
 
 Let `C` denote a non-expanded parameter pack which expand to conditions with `sizeof...(C) == N`.
@@ -78,7 +78,7 @@ expands to
 ```
 The limiting case `N = 0` evaluates to `( D )`.
 
-## III Extension of Conditional Operator
+## III. Extension of Conditional Operator
 In order to combine the conditional operator [[2]](#2-programming-languages---c--isoiec-148822017e-816-conditional-operator-exprcond-httpstimsong-cppgithubiocppwpn4659exprcond) easily with the `std::unreachable()` from proposal P0627R3 [[4]](#4-function-to-mark-unreachable-code-httpswg21linkp0627r3) the handing of void types on conditional operators has to be relaxed.
 
 In C++ 17 the following rule holds: for a conditional operator [[2]](#2-programming-languages---c--isoiec-148822017e-816-conditional-operator-exprcond-httpstimsong-cppgithubiocppwpn4659exprcond):
@@ -131,7 +131,7 @@ T test_impl(std::size_t j, std::index_sequence<is...>)
 ```
 By this it can be expressed that all expected values of `j` are covered by the `is...` and the compiler does not have to add an extra branch for non covered `j` values. The implementation would work since the signature of `std::unreachable` reads as `[[noreturn]] void std::unreachable()`.
 
-## VI Further Example Use Case
+## VI. Further Example Use Case
 
 Suppose, one has a collection of translation classes defined as follows.
 ```C++
@@ -175,7 +175,7 @@ std::string translate_to_english(
 
 The task is now to write the function `translate_to_english_impl` which calls the correct translation with a language string given at run time.
 
-### A: Solution with Fold and Throw
+### A) Solution with Fold and Throw
 
 This task could be solved with ternary fold expression from this proposal like follows.
 ```C++
@@ -195,9 +195,9 @@ std::string translate_to_english_impl(
 }
 ```
 
-### B: Solution with Fold and Noreturn Function
+### B) Solution with Fold and Noreturn Function
 
-If one wants to factor out the handling of assembling the exception into a function one can do this as follows due to the relaxed rules for the conditional operator proposed in [III Extension of Conditional Operator](#iii-extension-of-conditional-operator).
+If one wants to factor out the handling of assembling the exception into a function one can do this as follows due to the relaxed rules for the conditional operator proposed in [III. Extension of Conditional Operator](#iii-extension-of-conditional-operator).
 
 ```C++
 #include <stdexcept>
@@ -222,7 +222,7 @@ std::string translate_to_english_impl(
 }
 ```
 
-### C: Solution with Fold and Explicit Default 
+### C) Solution with Fold and Explicit Default 
 
 If the first language is the default language this could be realized as follows.
 
@@ -238,9 +238,9 @@ std::string translate_to_english_impl(
 }
 ```
 
-### D: Solution with Fold and Unreachable
+### D) Solution with Fold and Unreachable
 
-If one wants to tell the compiler that the list of languages is complete (maybe because the argument has already been checked before) this could be done as follows with the `std::unreachable` function proposed in P0627R3 [[4]](#4-function-to-mark-unreachable-code-httpswg21linkp0627r3) and the relaxed rules for the conditional operator proposed in [III Extension of Conditional Operator](#iii-extension-of-conditional-operator).
+If one wants to tell the compiler that the list of languages is complete (maybe because the argument has already been checked before) this could be done as follows with the `std::unreachable` function proposed in P0627R3 [[4]](#4-function-to-mark-unreachable-code-httpswg21linkp0627r3) and the relaxed rules for the conditional operator proposed in [III. Extension of Conditional Operator](#iii-extension-of-conditional-operator).
 
 ```C++
 #include <utility>
@@ -256,11 +256,11 @@ std::string translate_to_english_impl(
 }
 ```
 
-## V Comparison to Alternatives already available in C++20
+## V. Comparison to Alternatives already available in C++20
 
-This paragraph discusses how the functionality of the fold expression in [A: Solution with Fold and Throw](#a-solution-with-fold-and-throw) could be reached with functionality already available since C++20. (The examples can be found on Compiler Explorer https://gcc.godbolt.org/z/qzup48, too.)
+This paragraph discusses how the functionality of the fold expression in [A) Solution with Fold and Throw](#a-solution-with-fold-and-throw) could be reached with functionality already available since C++20. (The examples can be found on Compiler Explorer https://gcc.godbolt.org/z/qzup48, too.)
 
-### A: Explicit Calls
+### A) Explicit Calls
 
 Of cause one always has the possibility to explicitly resolve the fold expression.
 
@@ -287,7 +287,7 @@ std::string translate_to_english_impl(
 
 This implementation would create exactly the same binary as the fold expression. However, the implementation is less generic since it is limited to a fixed number of languages, in this case three, and it contains duplication of code.
 
-### B: Recursion
+### B) Recursion
 
 Fold expressions can often be emulated by recursion. This is also true for the fold of the conditional operator. A recursive implementation would look like:
 
@@ -322,7 +322,7 @@ std::string translate_to_english_impl(
 
 With the recursion the implementation detail is spread over several function, i.e. the recursion start and the recursive functions.
 
-### C:  Reuse the fold on operator||
+### C)  Reuse the fold on operator||
 
 Fold expression can often be emulate by making use of another fold expression. The is also true for the fold of the conditional operator. It can be emulated by the fold on operator|| [[5]](#5-foonathanblog-nifty-fold-expression-tricks-get-the-nth-element-where-n-is-a-runtime-value-httpsfoonathannet202005fold-tricks).
 
@@ -353,9 +353,9 @@ Besides from the fact that there is a lot of code which distracts from the origi
 1. The return type has to be default constructible, move or copy assignable, move or copy constructible (which is the case for `std::string` but is not valid for all types).
 2. Additional overhead might be created by calling the default constructor and a move assignment. (Note: The move or copy constructor is not called due to NRVO.)
 
-## VI Design Decisions
+## VI. Design Decisions
 
-### A: On not Supporting Fold Expressions without Default Expression
+### A) On not Supporting Fold Expressions without Default Expression
 
 A fold expression without default expression would look like `( C ? E : ... )`. However, this notation leads to confusion since it is unclear what to do with the n-th condition `C(N)`  in case `sizeof...(C)` and `sizeof...(E)` is equal to `N`.
 
@@ -365,7 +365,7 @@ The only advantage of  `( C ? E : ... )` compared to `( C ? E : ... : std::unrea
 
 However, this slight difference may not be worth the additional confusion and the fold expression without default expression could be added in any later C++ standard version if needed. 
 
-## VII Revision History
+## VII. Revision History
 
 * Revision 1: 
   * Initial proposal
@@ -377,7 +377,7 @@ However, this slight difference may not be worth the additional confusion and th
   * Enhancing examples with throw in last argument of ternary expression
   * Added comparison to alternative implementations already available in C++20
 
-## VIII References
+## VIII. References
 ###### [1] Programming Languages - C ++, ISO/IEC 14882:2017(E), 8.1.6 Fold expressions [expr.prim.fold] https://timsong-cpp.github.io/cppwp/n4659/expr.prim.fold
 ###### [2] Programming Languages - C ++, ISO/IEC 14882:2017(E), 8.16 Conditional operator [expr.cond] https://timsong-cpp.github.io/cppwp/n4659/expr.cond
 ###### [3] Programming Languages - C ++, ISO/IEC 14882:2017(E), 10.6.8 Noreturn attribute [dcl.attr.noreturn] https://timsong-cpp.github.io/cppwp/n4659/dcl.attr.noreturn
