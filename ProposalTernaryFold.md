@@ -66,17 +66,17 @@ Only right fold expressions are supported for the conditional ternary operator. 
 
 Let `C` denote a non-expanded parameter pack which expand to conditions with `sizeof...(C) == N`.
 Let `E` denote a non-expanded parameter pack of the same size as `C`.
-Let `I` denote an ordinary expression.
+Let `D` denote an ordinary expression.
 
 The following fold expression
 ```
-( C ? E : ... : I )
+( C ? E : ... : D )
 ```
 expands to
 ```
-( C(1) ? E(1) : ( ... ( C(N-1) ? E(N-1) : ( C(N) ? E(N) : I ) ) ) )
+( C(1) ? E(1) : ( ... ( C(N-1) ? E(N-1) : ( C(N) ? E(N) : D ) ) ) )
 ```
-The limiting case `N = 0` evaluates to `( I )`.
+The limiting case `N = 0` evaluates to `( D )`.
 
 ## III Extension of Conditional Operator
 In order to combine the conditional operator [[2]](#2-programming-languages---c--isoiec-148822017e-816-conditional-operator-exprcond-httpstimsong-cppgithubiocppwpn4659exprcond) easily with the `std::unreachable()` from proposal P0627R3 [[4]](#4-function-to-mark-unreachable-code-httpswg21linkp0627r3) the handing of void types on conditional operators has to be relaxed.
@@ -355,22 +355,23 @@ Besides from the fact that there is a lot of code which distracts from the origi
 
 ## VI Design Decisions
 
-### A: On not Supporting Fold Expressions without Initial Value
+### A: On not Supporting Fold Expressions without Default Expression
 
-A fold expression without initial value would look like `( C ? E : ... )`. However, this notation leads to confusion since it is unclear what to do with the n-th condition `C(N)`  in case `sizeof...(C)` and `sizeof...(E)` is equal to `N`.
+A fold expression without default expression would look like `( C ? E : ... )`. However, this notation leads to confusion since it is unclear what to do with the n-th condition `C(N)`  in case `sizeof...(C)` and `sizeof...(E)` is equal to `N`.
 
 This case can be expressed with less confusion by `( C ? E : ... : std::unreachable())`.
 
 The only advantage of  `( C ? E : ... )` compared to `( C ? E : ... : std::unreachable())` would be that in the first case the compiler would not call `C(N)` whereas in the second case the compiler has to call `C(N)` in case it may have side effects even though the result is not used anymore.
 
-However, this slight difference may not be worth the additional confusion and the fold expression without initial value could be added in any later C++ standard version if needed. 
+However, this slight difference may not be worth the additional confusion and the fold expression without default expression could be added in any later C++ standard version if needed. 
 
 ## VII Revision History
 
 * Revision 1: 
   * Initial proposal
 * Revision 2: 
-  * Remove proposal for ternary fold without initial value
+  * Rename 'initial value' to 'default expression'
+  * Remove proposal for ternary fold without initial value 
   * Proposal to relax void handling on conditional operator
   * Include usage of Unreachable Code proposal P0627R3 [[4]](#4-function-to-mark-unreachable-code-httpswg21linkp0627r3)
   * Enhancing examples with throw in last argument of ternary expression
