@@ -367,9 +367,9 @@ However, this slight difference may not be worth the additional confusion and th
 
 ## VII. Revision History
 
-* Revision 1: 
+* Revision 0: 
   * Initial proposal
-* Revision 2: 
+* Revision 1: 
   * Rename 'initial value' to 'default expression'
   * Remove proposal for ternary fold without initial value 
   * Proposal to relax void handling on conditional operator
