@@ -1,14 +1,14 @@
 |                  |                                                   |
 | ---------------- | ------------------------------------------------- |
-| Document Number: | P1012R?                                           |
-| Date:            | 2020-06-02                                        |
+| Document Number: | P1012R1                                           |
+| Date:            | 2020-10-25                                        |
 | Project:         | Programming Language C++                          |
 | Reply-to:        | Frank Zingsheim `<f dot zingsheim at gmx dot de>` |
 | Audience:        | Evolution                                         |
 
 # Proposal Ternary Right Fold Expression
 
-### *Revision ?*
+### *Revision 1*
 
 ## I. Motivation
 ### A) Use case
