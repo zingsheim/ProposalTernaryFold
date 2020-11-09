@@ -372,7 +372,7 @@ std::string translate_to_english_impl(
 {
     for...(constexpr const auto & [translator_language, to_english]: 
                std::tuple{std::tuple{translators::language,
-                                     translators::translate_to_english}...}
+                                     translators::translate_to_english}...})
     {
         if (language == translator_language)
             return to_english(text);
