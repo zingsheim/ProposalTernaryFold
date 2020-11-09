@@ -377,6 +377,10 @@ std::string translate_to_english_impl(
         if (language == translator_language)
             return to_english(text);
     }
+    throw std::invalid_argument(
+                         std::string("Unknown language: ").append(
+                             language.begin(),
+                             language.end()));
 }
 ```
 
