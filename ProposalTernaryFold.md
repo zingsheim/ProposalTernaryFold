@@ -353,7 +353,38 @@ Besides from the fact that there is a lot of code which distracts from the origi
 1. The return type has to be default constructible, move or copy assignable, move or copy constructible (which is the case for `std::string` but is not valid for all types).
 2. Additional overhead might be created by calling the default constructor and a move assignment. (Note: The move or copy constructor is not called due to NRVO.)
 
-## VI. Design Decisions
+## VI. Comparison to Alternatives with other Proposals
+
+This paragraph discusses how the functionality of the fold expression in [A) Solution with Fold and Throw](#a-solution-with-fold-and-throw) could be reached with functionality from other open proposals.
+
+### A) Expansion statements "for...()" P1306R1 [[6]](#6-expansion-statements-httpswg21linkp1306r1)
+
+The expansion statement proposed in P1306R1 can be used to defold the template parameters
+
+```C++
+#include <stdexcept>
+#include <tuple>
+
+template<class... translators>
+std::string translate_to_english_impl(
+    std::string_view language,
+    std::string_view text)
+{
+    for...(constexpr const auto & [translator_language, to_english]: 
+               std::tuple{std::tuple{translators::language,
+                                     translators::translate_to_english}...}
+    {
+        if (language == translator_language)
+            return to_english(text);
+    }
+}
+```
+
+For this solution all functions `translators::translate_to_english` have to return the same type. Which is the case in this example. However the folded conditional operator `( C ? E : ... : D )` would be able to combine different types of the `E`s and the `D` according to the rules given in [[2]](#2-programming-languages---c--isoiec-148822017e-816-conditional-operator-exprcond-httpstimsong-cppgithubiocppwpn4659exprcond).
+
+Furthermore, it is necessary to have a seperate function or lambda to make use of the return statement inside the ` for...()`.
+
+## VII. Design Decisions
 
 ### A) On not Supporting Fold Expressions without Default Expression
 
@@ -365,11 +396,11 @@ The only advantage of  `( C ? E : ... )` compared to `( C ? E : ... : std::unrea
 
 However, this slight difference may not be worth the additional confusion and the fold expression without default expression could be added in any later C++ standard version if needed. 
 
-## VII. Acknowledgements
+## VIII. Acknowledgements
 
 Many thanks to Arthur O'Dwyer for his valuable feedback.
 
-## VIII. Revision History
+## IX. Revision History
 
 * Revision 0: 
   * Initial proposal
@@ -380,11 +411,14 @@ Many thanks to Arthur O'Dwyer for his valuable feedback.
   * Include usage of Unreachable Code proposal P0627R3 [[4]](#4-function-to-mark-unreachable-code-httpswg21linkp0627r3)
   * Enhancing examples with throw in last argument of ternary expression
   * Added comparison to alternative implementations already available in C++20
+* Revision 2:
+  * Added comparison to alternative implementation with Expansion statements "for...()" P1306R1 [[6]](#6-expansion-statements-httpswg21linkp1306r1)
 
-## IX. References
+## X. References
 ###### [1] Programming Languages - C ++, ISO/IEC 14882:2017(E), 8.1.6 Fold expressions [expr.prim.fold] https://timsong-cpp.github.io/cppwp/n4659/expr.prim.fold
 ###### [2] Programming Languages - C ++, ISO/IEC 14882:2017(E), 8.16 Conditional operator [expr.cond] https://timsong-cpp.github.io/cppwp/n4659/expr.cond
 ###### [3] Programming Languages - C ++, ISO/IEC 14882:2017(E), 10.6.8 Noreturn attribute [dcl.attr.noreturn] https://timsong-cpp.github.io/cppwp/n4659/dcl.attr.noreturn
 ###### [4] Function to mark unreachable code https://wg21.link/P0627R3
 ###### [5] foonathan::blog(): Nifty Fold Expression Tricks: Get the nth element (where n is a runtime value) https://foonathan.net/2020/05/fold-tricks/
-###### [6] GitHub repository of this document https://github.com/zingsheim/ProposalTernaryFold
+###### [6] Expansion statements https://wg21.link/P1306R1
+###### [7] GitHub repository of this document https://github.com/zingsheim/ProposalTernaryFold
